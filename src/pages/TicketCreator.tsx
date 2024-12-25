@@ -2,6 +2,7 @@ import React from 'react';
 import { TicketForm } from '../components/TicketForm';
 import { BulkTicketUpload } from '../components/BulkTicketUpload';
 import { GlitchButton } from '../components/GlitchButton';
+import { TestTicket } from '../components/TestTicket';
 
 export function TicketCreator() {
   const [mode, setMode] = React.useState<'manual' | 'bulk'>('manual');
@@ -10,6 +11,8 @@ export function TicketCreator() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-center">
         <div className="w-full max-w-lg space-y-6">
+          <TestTicket />
+          
           <div className="flex justify-center gap-4">
             <GlitchButton
               onClick={() => setMode('manual')}

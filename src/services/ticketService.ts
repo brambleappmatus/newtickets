@@ -23,8 +23,6 @@ export async function createTicket(payload: TicketPayload): Promise<ApiResponse>
     ...(payload.parentTicket ? { parent: payload.parentTicket } : {})
   };
 
-  console.log('Sending ticket payload:', apiPayload); // For debugging
-
   return fetchClient('/tickets.json', {
     method: 'POST',
     body: JSON.stringify(apiPayload),
