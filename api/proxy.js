@@ -20,6 +20,18 @@ export default async function handler(req, res) {
       accessToken
     });
 
+    // Parse the request body
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+
+    // Ensure required fields are present
+    const payload = {
+      ...body,
+      stage: body.stage || 'OPEN',
+      priority: body.priority || 'LOW'
+    };
+
+    console.log('Proxy sending payload:', payload); // For debugging
+
     // Make the request to the external API
     const response = await fetch(`${targetUrl}?${queryParams}`, {
       method: 'POST',
@@ -27,10 +39,11 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: req.body
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();
+    console.log('API response:', data); // For debugging
 
     // Check for API-specific errors
     if (data.error) {
