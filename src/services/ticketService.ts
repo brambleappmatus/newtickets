@@ -13,10 +13,11 @@ export async function createTicket(payload: TicketPayload): Promise<ApiResponse>
 
   // Format the API payload according to requirements
   const apiPayload = {
+    title: payload.title.trim(),
     category: formatCategoryId(payload.category),
-    title: payload.title,
     stage: 'OPEN',
     priority: 'LOW',
+    // Optional fields
     ...(payload.description ? { comment: payload.description } : {}),
     ...(payload.status ? { statuses: [payload.status] } : {}),
     ...(payload.parentTicket ? { parent: payload.parentTicket } : {})

@@ -4,8 +4,6 @@ export interface TicketPayload {
   description?: string;
   category: string;
   status?: string;
-  stage?: 'OPEN';
-  priority?: 'LOW';
 }
 
 export interface ApiResponse {
