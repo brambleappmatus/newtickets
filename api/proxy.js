@@ -25,17 +25,25 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: req.body
     });
 
     const data = await response.json();
+
+    // Check for API-specific errors
+    if (data.error) {
+      return res.status(400).json(data);
+    }
+
     return res.status(response.status).json(data);
   } catch (error) {
     console.error('Proxy error:', error);
     return res.status(500).json({ 
-      error: 'Internal server error',
-      message: error.message 
+      error: {
+        message: error.message || 'Internal server error'
+      }
     });
   }
 }

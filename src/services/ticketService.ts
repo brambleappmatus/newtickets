@@ -11,19 +11,19 @@ export async function createTicket(payload: TicketPayload): Promise<ApiResponse>
     throw new Error('Category is required');
   }
 
-  // Format the category ID properly
-  const formattedPayload = {
-    ...payload,
-    category: formatCategoryId(payload.category)
+  // Format the API payload according to requirements
+  const apiPayload = {
+    category: formatCategoryId(payload.category),
+    title: payload.title,
+    stage: 'OPEN',
+    priority: 'LOW',
+    ...(payload.description ? { comment: payload.description } : {}),
+    ...(payload.status ? { statuses: [payload.status] } : {}),
+    ...(payload.parentTicket ? { parent: payload.parentTicket } : {})
   };
-
-  // Clean up payload by removing undefined/empty values
-  const cleanPayload = Object.fromEntries(
-    Object.entries(formattedPayload).filter(([_, value]) => value != null && value !== '')
-  );
 
   return fetchClient('/tickets.json', {
     method: 'POST',
-    body: JSON.stringify(cleanPayload),
+    body: JSON.stringify(apiPayload),
   });
 }

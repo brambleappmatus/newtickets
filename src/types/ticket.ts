@@ -4,11 +4,17 @@ export interface TicketPayload {
   description?: string;
   category: string;
   status?: string;
-  stage: 'OPEN';
-  priority: 'LOW';
+  stage?: 'OPEN';
+  priority?: 'LOW';
 }
 
 export interface ApiResponse {
-  // Add specific response type here when known
-  [key: string]: any;
+  result?: {
+    name: string;
+    [key: string]: any;
+  };
+  error?: {
+    form?: Record<string, string>;
+    message?: string;
+  };
 }
