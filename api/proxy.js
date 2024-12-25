@@ -1,18 +1,18 @@
-// Serverless function to proxy API requests
-module.exports = async (req, res) => {
+import { getApiConfig } from './config.js';
+import { CORS_HEADERS, handleCors } from './cors.js';
+
+export default async function handler(req, res) {
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Settings');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    return res.status(200).end();
-  }
+  if (handleCors(req, res)) return;
+
+  // Set CORS headers for all responses
+  Object.entries(CORS_HEADERS).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
 
   try {
-    const settings = JSON.parse(req.headers['x-api-settings'] || '{}');
-    const instanceUrl = settings.instanceUrl || 'mstanotest.daktela.com';
-    const accessToken = settings.apiKey || 'ffc90793e8738b0e648da603985c5f334cc4caf5';
-
+    const { instanceUrl, accessToken } = getApiConfig(req.headers);
+    
     // Build the target URL
     const targetUrl = `https://${instanceUrl}/api/v6/tickets.json`;
     const queryParams = new URLSearchParams({
@@ -26,13 +26,16 @@ module.exports = async (req, res) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(JSON.parse(req.body))
+      body: req.body
     });
 
     const data = await response.json();
     return res.status(response.status).json(data);
   } catch (error) {
     console.error('Proxy error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
   }
-};
+}
