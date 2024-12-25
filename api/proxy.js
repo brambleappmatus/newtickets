@@ -3,7 +3,7 @@ module.exports = async (req, res) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Settings');
     res.setHeader('Access-Control-Allow-Origin', '*');
     return res.status(200).end();
   }
@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: req.body
+      body: JSON.stringify(JSON.parse(req.body))
     });
 
     const data = await response.json();
