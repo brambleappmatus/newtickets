@@ -7,23 +7,17 @@ interface FetchOptions extends RequestInit {
 export async function fetchClient(endpoint: string, options: FetchOptions = {}) {
   const config = getApiConfig();
   const { params = {}, ...fetchOptions } = options;
-  
-  // Add access token to params
-  params._method = params._method || 'POST';
-  params.accessToken = config.ACCESS_TOKEN;
-  
-  const queryString = new URLSearchParams(params).toString();
-  
-  // Build the full URL using the instance URL from config
-  const baseUrl = `https://${config.INSTANCE_URL}/api/v6`;
-  const url = `${baseUrl}${endpoint}?${queryString}`;
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch('/api/proxy', {
       ...fetchOptions,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'X-API-Settings': JSON.stringify({
+          instanceUrl: config.INSTANCE_URL,
+          apiKey: config.ACCESS_TOKEN
+        }),
         ...fetchOptions.headers,
       },
     });
