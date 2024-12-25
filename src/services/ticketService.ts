@@ -23,8 +23,14 @@ export async function createTicket(payload: TicketPayload): Promise<ApiResponse>
     ...(payload.parentTicket ? { parent: payload.parentTicket } : {})
   };
 
-  return fetchClient('/tickets.json', {
+  const response = await fetchClient('/tickets.json', {
     method: 'POST',
     body: JSON.stringify(apiPayload),
   });
+
+  if (response.error) {
+    throw new Error(response.error.message || 'Failed to create ticket');
+  }
+
+  return response;
 }
