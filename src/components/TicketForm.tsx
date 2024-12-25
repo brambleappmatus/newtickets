@@ -34,21 +34,21 @@ export function TicketForm() {
       const payload = {
         title: formData.title,
         category: formData.category,
-        status: formData.status || undefined,
-        description: formData.description || undefined,
-        stage: 'OPEN' as const,
-        priority: 'LOW' as const,
+        description: formData.description,
+        ...(formData.status ? { status: formData.status } : {}),
         ...(hasParent && formData.parentTicket ? { parentTicket: formData.parentTicket } : {})
       };
+
       await createTicket(payload);
       setSuccess(true);
-      setFormData(prev => ({
+      // Reset form
+      setFormData({
         parentTicket: '',
-        category: prev.category,
-        status: prev.status,
+        category: formData.category, // Keep the last used category
+        status: formData.status, // Keep the last used status
         title: '',
         description: '',
-      }));
+      });
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to create ticket');
     } finally {
@@ -85,32 +85,7 @@ export function TicketForm() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium">
-          Category
-        </label>
-        <CategorySelect
-          categories={categories}
-          value={formData.category}
-          onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-          required
-        />
-      </div>
-
-      <div className="space-y-1">
-        <label className="block text-sm font-medium">
-          Status
-        </label>
-        <StatusSelect
-          statuses={statuses}
-          value={formData.status}
-          onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
-        />
-      </div>
-
-      <div className="space-y-1">
-        <label className="block text-sm font-medium">
-          Title
-        </label>
+        <label className="block text-sm font-medium">Title</label>
         <input
           type="text"
           value={formData.title}
@@ -122,9 +97,26 @@ export function TicketForm() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium">
-          Description
-        </label>
+        <label className="block text-sm font-medium">Category</label>
+        <CategorySelect
+          categories={categories}
+          value={formData.category}
+          onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+          required
+        />
+      </div>
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium">Status</label>
+        <StatusSelect
+          statuses={statuses}
+          value={formData.status}
+          onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+        />
+      </div>
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium">Description</label>
         <textarea
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
