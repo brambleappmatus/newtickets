@@ -24,6 +24,7 @@ export async function fetchClient(endpoint: string, options: FetchOptions = {}) 
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('API Error:', errorData); // For debugging
       if (errorData.error?.form) {
         const formErrors = Object.entries(errorData.error.form)
           .map(([field, message]) => `${field}: ${message}`)
@@ -35,6 +36,7 @@ export async function fetchClient(endpoint: string, options: FetchOptions = {}) 
 
     return response.json();
   } catch (error) {
+    console.error('Fetch error:', error); // For debugging
     if (error instanceof Error) {
       throw error;
     }
